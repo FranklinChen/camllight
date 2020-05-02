@@ -16,6 +16,33 @@ static short *check;
 static int lowzero;
 static int high;
 
+int output(void);
+static void output_char(unsigned n);
+static void output_short(int n);
+int output_rule_data(void);
+int output_yydefred(void);
+int output_actions(void);
+int token_actions(void);
+int goto_actions(void);
+int default_goto(int symbol);
+void save_column(int symbol, int default_state);
+int sort_actions(void);
+int pack_table(void);
+int matching_vector(int vector);
+int pack_vector(int vector);
+int output_base(void);
+int output_table(void);
+int output_check(void);
+int output_transl(void);
+void output_stored_text(void);
+int output_debug(void);
+void output_trailing_text(void);
+void copy_file(FILE **file, char *file_name);
+int output_semantic_actions(void);
+int output_entries(void);
+int free_itemsets(void);
+int free_shifts(void);
+int free_reductions(void);
 
 output()
 {
@@ -323,6 +350,7 @@ int symbol;
 
 
 
+void
 save_column(symbol, default_state)
 int symbol;
 int default_state;
@@ -726,6 +754,7 @@ output_transl()
   fprintf(code_file, "    0|];;\n\n");
 }
 
+void
 output_stored_text()
 {
     register int c;
@@ -757,6 +786,7 @@ output_debug()
 {
 }
 
+void
 output_trailing_text()
 {
     register int c, last;
@@ -814,6 +844,7 @@ output_trailing_text()
 }
 
 
+void
 copy_file(file, file_name)
      FILE ** file;
      char * file_name;
