@@ -1,6 +1,46 @@
 #include <string.h>
 #include "defs.h"
 
+void cachec(int c);
+void get_line(void);
+char *dup_line(void);
+void skip_comment(void);
+int nextc(void);
+int keyword(void);
+void copy_ident(void);
+void copy_text(void);
+void copy_union(void);
+int hexval(int c);
+bucket *get_literal(void);
+int is_reserved(char *name);
+bucket *get_name(void);
+int get_number(void);
+char *get_tag(void);
+void declare_tokens(int assoc);
+void declare_types(void);
+void declare_start(void);
+void read_declarations(void);
+void output_token_type(void);
+void initialize_grammar(void);
+void expand_items(void);
+void expand_rules(void);
+void advance_to_start(void);
+void start_rule(register bucket *bp, int s_lineno);
+void end_rule(void);
+void insert_empty_rule(void);
+void add_symbol(void);
+void copy_action(void);
+int mark_symbol(void);
+void read_grammar(void);
+void free_tags(void);
+void pack_names(void);
+void check_symbols(void);
+void pack_symbols(void);
+void make_goal(void);
+void pack_grammar(void);
+void print_grammar(void);
+void reader(void);
+
 /*  The line size must be a positive integer.  One hundred was chosen   */
 /*  because few lines in Yacc input grammars exceed 100 characters.     */
 /*  Note that if a line exceeds LINESIZE characters, the line buffer    */
@@ -35,6 +75,7 @@ char *name_pool;
 char line_format[] = "(* Line %d, file %s *)\n";
 
 
+void
 cachec(c)
 int c;
 {
@@ -50,6 +91,7 @@ int c;
 }
 
 
+void
 get_line()
 {
     register FILE *f = input_file;
@@ -114,6 +156,7 @@ dup_line()
 }
 
 
+void
 skip_comment()
 {
     register char *s;
@@ -269,6 +312,7 @@ keyword()
 }
 
 
+void
 copy_ident()
 {
     register int c;
@@ -298,6 +342,7 @@ copy_ident()
 }
 
 
+void
 copy_text()
 {
     register int c;
@@ -415,6 +460,7 @@ loop:
 }
 
 
+void
 copy_union()
 {
     register int c;
@@ -786,6 +832,7 @@ get_tag()
 }
 
 
+void
 declare_tokens(assoc)
 int assoc;
 {
@@ -853,6 +900,7 @@ int assoc;
 }
 
 
+void
 declare_types()
 {
     register int c;
@@ -881,6 +929,7 @@ declare_types()
 }
 
 
+void
 declare_start()
 {
     register int c;
@@ -901,6 +950,7 @@ declare_start()
 }
 
 
+void
 read_declarations()
 {
     register int c, k;
@@ -949,6 +999,7 @@ read_declarations()
     }
 }
 
+void
 output_token_type()
 {
   bucket * bp;
@@ -968,6 +1019,7 @@ output_token_type()
   fprintf(interface_file, ";;\n");
 }
 
+void
 initialize_grammar()
 {
     nitems = 4;
@@ -999,6 +1051,7 @@ initialize_grammar()
 }
 
 
+void
 expand_items()
 {
     maxitems += 300;
@@ -1007,6 +1060,7 @@ expand_items()
 }
 
 
+void
 expand_rules()
 {
     maxrules += 100;
@@ -1019,6 +1073,7 @@ expand_rules()
 }
 
 
+void
 advance_to_start()
 {
     register int c;
@@ -1069,6 +1124,7 @@ advance_to_start()
 }
 
 
+void
 start_rule(bp, s_lineno)
 register bucket *bp;
 int s_lineno;
@@ -1084,6 +1140,7 @@ int s_lineno;
 }
 
 
+void
 end_rule()
 {
     if (!last_was_action) default_action_error();
@@ -1096,6 +1153,7 @@ end_rule()
 }
 
 
+void
 insert_empty_rule()
 {
     register bucket *bp, **bpp;
@@ -1125,6 +1183,7 @@ insert_empty_rule()
 }
 
 
+void
 add_symbol()
 {
     register int c;
@@ -1156,6 +1215,7 @@ add_symbol()
 }
 
 
+void
 copy_action()
 {
     register int c;
@@ -1365,6 +1425,7 @@ mark_symbol()
 }
 
 
+void
 read_grammar()
 {
     register int c;
@@ -1398,6 +1459,7 @@ read_grammar()
 }
 
 
+void
 free_tags()
 {
     register int i;
@@ -1413,6 +1475,7 @@ free_tags()
 }
 
 
+void
 pack_names()
 {
     register bucket *bp;
@@ -1438,6 +1501,7 @@ pack_names()
 }
 
 
+void
 check_symbols()
 {
     register bucket *bp;
@@ -1456,6 +1520,7 @@ check_symbols()
 }
 
 
+void
 pack_symbols()
 {
     register bucket *bp;
@@ -1592,6 +1657,7 @@ pack_symbols()
 }
 
 
+void
 make_goal()
 {
   static char name[7] = "'\\xxx'";
@@ -1638,6 +1704,7 @@ make_goal()
   }
 }
 
+void
 pack_grammar()
 {
     register int i, j;
@@ -1697,6 +1764,7 @@ pack_grammar()
 }
 
 
+void
 print_grammar()
 {
     register int i, j, k;
@@ -1733,6 +1801,7 @@ print_grammar()
 }
 
 
+void
 reader()
 {
     create_symbol_table();

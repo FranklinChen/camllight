@@ -122,6 +122,7 @@ usage()
     exit(1);
 }
 
+void
 getargs(argc, argv)
 int argc;
 char *argv[];

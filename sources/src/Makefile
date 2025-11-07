@@ -9,7 +9,7 @@ CC=gcc
 # This option circumvents a gcc bug on some platforms (680x0, 80386).
 # If you are using Linux with libc6 (RedHat 5, Debian 2), add -D__FAVOR_BSD
 # This option avoids signal-related problems.
-OPTS=
+OPTS=-O2 -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-pointer-sign -Wno-implicit-function-declaration
 
 # Extra libraries that have to be linked with the runtime system.
 # The math library "-lm" is linked by default.
