@@ -160,5 +160,4 @@ This is a historical project revival. Bug reports and patches are welcome via Gi
 
 ## History
 
-Caml Light was developed at INRIA in the 1990s. This repository includes updates to make it compile on modern systems.</content>
-<parameter name="filePath">/Users/chen/camllight/README.md
+Caml Light was developed at INRIA in the 1990s. This repository includes updates to make it compile on modern systems.
