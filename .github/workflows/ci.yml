@@ -5,16 +5,20 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      # Keep building every OS even when one fails, so a Linux break never
+      # hides the macOS result (and vice versa) while we diagnose.
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
