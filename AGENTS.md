@@ -14,20 +14,20 @@ All commands run from `sources/src/`:
 
 ```bash
 make configure   # probes the host, writes sources/config/m.h and s.h
-make OPTS="-O2 -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-pointer-sign -Wno-implicit-function-declaration" world
-make OPTS="...same flags..." bootstrap   # self-recompile to a byte-exact fixpoint
+make world       # build everything; fails unless the fib 20 self-test passes
+make bootstrap   # self-recompile; fails unless it reaches a byte-exact fixpoint
 sudo make install                        # to /usr/local (BINDIR, LIBDIR overridable)
 make clean
 make depend                              # regenerate Makefile dependency stanzas
 ```
 
-The `OPTS` warning-suppression flags are not optional on a current compiler: the C sources predate ANSI prototypes and signed-char/pointer-sign strictness, so without these flags the runtime fails to build. CI (`.github/workflows/ci.yml`, ubuntu-latest + macos-latest) runs exactly `configure` then `world` then `bootstrap` with these flags, then a toplevel smoke test. Keep the README CI badge and the workflow green.
+The Makefile's default `OPTS` carries the warning-suppression flags a current compiler needs (the C sources predate ANSI prototypes and signed-char/pointer-sign strictness); keep them if you override `OPTS`. CI (`.github/workflows/ci.yml`, ubuntu-latest + macos-latest) runs exactly `configure`, then `world`, then `bootstrap`, and relies on those two targets failing on failure. Keep the README CI badge and the workflow green.
 
-`make world` builds subsystems in dependency order (runtime, yacc, lib, compiler, linker, librar, lex, toplevel, launch) and finishes with a built-in sanity check that `fib 20` evaluates to 10946. There is no unit-test suite; correctness is established by two things: the `fib` smoke test and, more importantly, the bootstrap fixpoint.
+`make world` builds subsystems in dependency order (runtime, yacc, lib, compiler, linker, librar, lex, toplevel, launch) and finishes with a built-in sanity check that fails unless `fib 20` evaluates to 10946. There is no unit-test suite; correctness is established by two things: the `fib` smoke test and, more importantly, the bootstrap fixpoint.
 
 ### The bootstrap fixpoint is the real test
 
-`make bootstrap` = `backup` then `promote` then `again` then `compare`. It copies the freshly built `compiler/camlcomp` (and linker/librar/lex) up to the top level, recompiles everything from clean with that new compiler, and then `cmp`s the result byte-for-byte against the previous build. Success means the compiler compiled by itself reproduces itself exactly. After any change to `compiler/`, a change is only trustworthy once bootstrap reports "successfully recompiled itself." A single non-fixpoint pass is normal; the Makefile tells you to run another cycle.
+`make bootstrap` = `backup` then `promote` then `again` then `compare`. It copies the freshly built `compiler/camlcomp` (and linker/librar/lex) up to the top level, recompiles everything from clean with that new compiler, and then `cmp`s the result byte-for-byte against the previous build. Success means the compiler compiled by itself reproduces itself exactly. After any change to `compiler/`, a change is only trustworthy once bootstrap reports "successfully recompiled itself." A single non-fixpoint pass is normal right after a compiler change: `compare` then prints "Hmph. Better do one more bootstrapping cycle." and fails, and running `make bootstrap` again is the remedy.
 
 To run a single source file in the toplevel without installing (this is the smoke-test invocation, useful for quick checks):
 
