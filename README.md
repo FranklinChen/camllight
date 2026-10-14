@@ -16,7 +16,7 @@ These files were written for this fork and do **not** exist in [`camllight/camll
 
 - **`README.md`** (this file): a fork-specific overview, written from scratch here. It is not upstream's README, and it does not replace upstream's own documentation.
 - **`.github/workflows/ci.yml`**: GitHub Actions CI that builds and bootstraps on Linux and macOS.
-- **`CLAUDE.md`**: guidance for contributors (and AI assistants) working in this repository.
+- **`AGENTS.md`**: guidance for contributors (and AI coding agents) working in this repository.
 
 Everything under `sources/`, `doc/`, and `windows/` comes from upstream Caml Light.
 
