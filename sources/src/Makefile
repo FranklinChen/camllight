@@ -70,11 +70,15 @@ world:
 	cd launch; make LIBDIR=$(LIBDIR) BINDIR=$(BINDIR) \
                            CC="$(CC)" OPTS="$(OPTS)" LIBS="$(LIBS)" all
 	@ echo "Let's test quickly the toplevel system..."
-	(echo "1+2;;";                                                        \
-         echo "let rec fib n = if n < 2 then 1 else fib(n-1)+fib(n-2);;";     \
-         echo "fib 20;;") | ./camlrun toplevel/camltop -stdlib lib
-	@ echo "Is that 10946 on the line above? Good."
-	@ echo "The Caml Light system is up and running."
+	@ out=`(echo "1+2;;";                                                 \
+	        echo "let rec fib n = if n < 2 then 1 else fib(n-1)+fib(n-2);;"; \
+	        echo "fib 20;;") | ./camlrun toplevel/camltop -stdlib lib`;    \
+	  echo "$$out";                                                        \
+	  case "$$out" in                                                      \
+	    *"- : int = 10946"*) echo "The Caml Light system is up and running.";; \
+	    *) echo "fib 20 should be 10946: the toplevel system is broken." >&2; \
+	       exit 1;;                                                        \
+	  esac
 
 # Rebuild the system (bootstrap)
 bootstrap: backup promote again compare
@@ -105,6 +109,7 @@ compare:
         && cmp camllex lex/camllex; \
         then echo "The Caml Light system has successfully recompiled itself.";\
         else echo "Hmph. Better do one more bootstrapping cycle."; \
+             exit 1; \
         fi'
 
 # Restore the latest backup copy of the compiler

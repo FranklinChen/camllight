@@ -29,27 +29,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential
 
-    - name: Configure and build
+    # `make world` fails unless its toplevel self-test prints fib 20 = 10946.
+    - name: Configure, build and test
       run: |
         cd sources/src
         make configure
-        make OPTS="-O2 -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-pointer-sign -Wno-implicit-function-declaration" world
+        make world
 
-    # `make compare` (the last step of bootstrap) only prints a message when
-    # the recompiled compiler differs from the committed one and still exits
-    # 0, so check for the success message explicitly.
+    # `make bootstrap` fails unless the recompiled compiler is identical to
+    # the committed one.
     - name: Bootstrap
       run: |
         cd sources/src
-        make OPTS="-O2 -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-pointer-sign -Wno-implicit-function-declaration" bootstrap | tee bootstrap.log
-        grep -q "The Caml Light system has successfully recompiled itself." bootstrap.log
-
-    # The toplevel exits 0 even after a type or syntax error, so assert on
-    # its output: fib 20 = 10946, the same check as the project's own
-    # self-test and the Homebrew formula's test.
-    - name: Test basic functionality
-      run: |
-        cd sources/src
-        printf 'let rec fib n = if n < 2 then 1 else fib(n-1) + fib(n-2);;\nfib 20;;\n' \
-          | ./camlrun toplevel/camltop -stdlib lib | tee toplevel.log
-        grep -q -- "- : int = 10946" toplevel.log
+        make bootstrap
