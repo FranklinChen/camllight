@@ -7,6 +7,9 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -18,7 +21,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
@@ -32,12 +35,21 @@ jobs:
         make configure
         make OPTS="-O2 -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-pointer-sign -Wno-implicit-function-declaration" world
 
+    # `make compare` (the last step of bootstrap) only prints a message when
+    # the recompiled compiler differs from the committed one and still exits
+    # 0, so check for the success message explicitly.
     - name: Bootstrap
       run: |
         cd sources/src
-        make OPTS="-O2 -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-pointer-sign -Wno-implicit-function-declaration" bootstrap
+        make OPTS="-O2 -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-pointer-sign -Wno-implicit-function-declaration" bootstrap | tee bootstrap.log
+        grep -q "The Caml Light system has successfully recompiled itself." bootstrap.log
 
+    # The toplevel exits 0 even after a type or syntax error, so assert on
+    # its output: fib 20 = 10946, the same check as the project's own
+    # self-test and the Homebrew formula's test.
     - name: Test basic functionality
       run: |
         cd sources/src
-        echo "1 + 2;;" | ./camlrun toplevel/camltop -stdlib lib
+        printf 'let rec fib n = if n < 2 then 1 else fib(n-1) + fib(n-2);;\nfib 20;;\n' \
+          | ./camlrun toplevel/camltop -stdlib lib | tee toplevel.log
+        grep -q -- "- : int = 10946" toplevel.log
